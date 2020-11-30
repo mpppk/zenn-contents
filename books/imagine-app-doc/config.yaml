@@ -1,0 +1,15 @@
+title: "imagine-app doc"
+summary: "画像管理&アノテーションツールのimagine-appについて、インストール方法や使い方を紹介します"
+topics: []
+published: false
+price: 0 # 有料の場合200〜5000
+# 本に含めるチャプターを順番に並べましょう
+chapters:
+  - what-is-imagine-app
+  - install
+  - getting-started
+  - gui-usage
+  - cui-usage
+  - imagine-utl-usage
+  - recipe
+  - architecture

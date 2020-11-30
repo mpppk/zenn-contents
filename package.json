@@ -1,0 +1,16 @@
+{
+  "name": "zenn-contents",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/mpppk/zenn-contents",
+  "author": "mpppk <niboshiporipori@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "zenn-cli": "^0.1.57"
+  },
+	"scripts": {
+		"new:article": "zenn new:article",
+		"new:book": "zenn new:book",
+		"preview": "zenn preview"
+	}
+}
