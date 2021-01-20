@@ -47,7 +47,7 @@ $ docker-compose up
 $ imagine --db fashion_mnist.imagine
 ```
 
-初夏起動時は、以下のように画像が表示されません。
+初期起動時は、以下のように画像が表示されません。
 
 ![](https://storage.googleapis.com/zenn-user-upload/g1ub7fwg6ohg5id43gea11pmmq9n)
 
@@ -65,9 +65,9 @@ $ imagine --db fashion_mnist.imagine
 :::details 自分で fashion mnist 用の imagine ファイルを作成する
 このチュートリアルでは作成済みのメタデータを利用しましたが、実際にはまず GUI か CUI から作成する必要があります。ここでは CUI で作成する場合について簡単に紹介します。
 
-imagine-app は`asset update`コマンドで標準入力からメタデータを読み込むことができます。以下のような、1 行に一つの asset に対応する json 形式のメタデータを与えてください。(json を改行すると正しく動作しません)
+imagine-app は`asset update`コマンドで標準入力からメタデータを読み込むことができます。以下のような、1 行に一つの asset に対応する json lines 形式のメタデータを与えてください。(json を改行すると正しく動作しません)
 
-```
+```jsonl
  { "name": "1", "path": "test/Coat/1.png", "boundingBoxes": [{ "TagName": "test" }, { "TagName": "Coat" }] }
  { "name": "2", "path": "test/Coat/2.png", "boundingBoxes": [{ "TagName": "test" }, { "TagName": "Coat" }] }
 ```
@@ -201,7 +201,16 @@ train_generator=datagen.flow_from_dataframe(
 
 ## 外部のアノテーションを imagine-app へ反映させる
 
-例として、作成した機械学習モデルが判定に失敗した画像へタグを付与する例を考えましょう。以下のように、判定に失敗したタグを付与する内容の json を標準出力へ出力するスクリプトを作成したとします。
+例として、機械学習モデルが判定に失敗した画像へタグを付与する例を考えましょう。
+リポジトリには以下のようなモデル判定結果を格納した csv が`predict.csv`として含まれています。
+
+```csv
+id, path, label, predict
+2, test/Bag/1.png, Bag, Bag
+2, test/Bag/1.png, Bag, Coat
+```
+
+`import_metadata.py`を実行する事で、`predict.csv`の内容を imagine-app で読み込める形式で出力します。
 
 ```shell
 $ inference.py
