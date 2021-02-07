@@ -1,5 +1,5 @@
-title: "imagine-app doc"
-summary: "画像管理&アノテーションツールのimagine-app(https://github.com/mpppk/imagine)について、インストール方法や使い方を紹介します。まだ書けていないチャプターがありますが、随時更新します。"
+title: "imagine-app(画像管理&アノテーションツール)の使い方"
+summary: "画像管理&アノテーションツールのimagine-app( https://github.com/mpppk/imagine )について、インストール方法や使い方を紹介します。まだ書けていないチャプターがありますが、随時更新します。"
 topics: ["CLI", "機械学習", "画像認識"]
 published: true
 price: 0 # 有料の場合200〜5000
