@@ -6,26 +6,27 @@ title: "GUIモードの使い方"
 
 ## GUI の起動
 
-imagine-app の起動はコマンドラインから行います。起動時には、読み込む imagine ファイルを`--db`フラグで指定します。
-指定したファイルが存在しない場合は新規に作成します。
+imagine-app の起動はコマンドラインから行います。起動時には、読み込む imagine ファイルを`--db`フラグで指定します。(指定したファイルが存在しない場合は新規に作成します。)
+`--basepath`フラグで、画像データセットのルートディレクトリを指定します。
 
 ```
-$ imagine --db db.imagine
+$ imagine --db db.imagine --basepath path/to/images
 ```
+
+basepath を正しく設定していれば、以下のように画像の一覧が表示されるはずです。
+初回起動時はタグが存在しないため、右側のタグリストは空欄になっています。タグの追加や変更は、画面右側のタグリストから行います。(詳しくは後述)
+
+![](https://storage.googleapis.com/zenn-user-upload/yawx7bytz92rec6ce8w2r7wmfeu0)
+
+#### Tips
+
+Base Path は最後に指定したパスが記録されるので、2 回目以降の起動時には単に`$ imagine --db db.imagine`で OK です。
 
 ## Base Path の設定
 
-imagine-app の初回起動時は、以下のように画像を正しく表示することができません。これは、imagine-app に画像が置かれているパス(Base Path)を指定する必要があるためです。
-
-![](https://storage.googleapis.com/zenn-user-upload/g1ub7fwg6ohg5id43gea11pmmq9n)
-
-Base Path の設定は、画面上部の歯車アイコンをクリックして行います。CHANGE ボタンをクリックし、画像が置かれているディレクトリを指定してください。
+Base Path の設定は、`--basepath`フラグだけでなく GUI からも行うことができます。画面上部の歯車アイコンをクリック → CHANGE ボタンをクリック → 画像が置かれているディレクトリを指定してください。
 
 ![](https://storage.googleapis.com/zenn-user-upload/zcgmdewxp0a8egbs480rp8eke8kd)
-
-正しく設定すると、以下のように画像やタグの一覧が表示されます。
-
-![](https://storage.googleapis.com/zenn-user-upload/yawx7bytz92rec6ce8w2r7wmfeu0)
 
 ## 画像とメタデータの表示
 
@@ -58,7 +59,7 @@ imagine-app ではアノテーションのことをタグと呼びます。
 
 ### 付与されたタグの確認
 
-選択した画像に付与されているタグは、左側がハイライトされます。
+選択した画像に付与されているタグは、タグの左側がハイライトされます。
 
 ### タグの付与と削除
 

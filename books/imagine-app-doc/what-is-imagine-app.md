@@ -16,7 +16,7 @@ title: "imagine-appとは"
 
 ![](https://storage.googleapis.com/zenn-user-upload/hthqy4qh63x7b1gcvc5x59bngk3s)
 
-また、画像サイズにもよりますが、1 万枚/sec 以上の読み込み速度を確認しています。 また、読み込みはバックグラウンドで実行されるため、どれだけ巨大なデータセットでも読み込み開始直後から作業を開始することができます。
+画像サイズにもよりますが、1 万枚/sec 以上の読み込み速度を確認しています。 読み込みはバックグラウンドで実行されるため、どれだけ巨大なデータセットでも読み込み開始直後から作業を開始することができます。
 
 ### CUI モード
 
@@ -24,7 +24,7 @@ title: "imagine-appとは"
 
 imagine-app では、GUI による画像管理だけでなく、CLI 操作も可能なため、他プログラムとの連携が簡単です。python の実行結果を CLI 経由で反映させたり、CI 上で imagine-app を動作させることを想定しています。詳細な使い方はこちら。
 
-### 軽量な単一バイナリでの動作
+### シングルバイナリかつ軽量
 
 ![](https://storage.googleapis.com/zenn-user-upload/71ud1q2yzkf35944xb5mfaydq8hn)
 
