@@ -6,7 +6,7 @@
   "author": "mpppk <niboshiporipori@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "zenn-cli": "^0.1.57"
+    "zenn-cli": "^0.5.0"
   },
 	"scripts": {
 		"new:article": "zenn new:article",
