@@ -6,19 +6,21 @@ topics: ["ai", "llm", "aiagent", "claudecode", "opencode"]
 published: false
 ---
 
+コーディングエージェントの harness（Claude Code、Codex CLI、OpenCode、Cursor Agent…）が増えすぎて、何を基準に選べばいいのか分からなくなっている人向けに、選定の軸を3つに整理する。
+
+先に結論を書いておく。**harness の選定は固定的な優劣では決まらない。**「いまのモデルで何を補う必要があるか」で決まり、モデルが変われば答えも変わる。そして harness は選定の対象であると同時に、**モデルのベンチマークスコアがどの harness で測られたかという測定条件でもある** — こちらは後半で扱う。
+
 ## harness とは何で、なぜ比較するのか
 
 エージェントは `agent = model + harness` と分解できる。モデル単体はトークンを予測するだけで、ファイルを読むことも、コマンドを実行することも、失敗をやり直すこともできない。それを与えるのが harness — loop、tools、context 管理、memory、permissions、sandbox、検証ループといった足場の総体である。
 
-harness に単一の完成形はない。同じモデルを、異なる前提で包んだ実装が並立している。この記事では手元に溜めた harness 群を 3 つの軸で横断し、選び方を整理する。
-
-最後にもう一つ、あまり明示されない論点を扱う。**harness は選定の対象であると同時に、ベンチマークの測定条件でもある。** モデルの比較記事を読むとき、これを知っているかどうかで数字の読み方が変わる。
+harness に単一の完成形はない。同じモデルを、異なる前提（loop・tools・context 管理・権限・UI）で包んだ実装が並立している。以下、3 つの軸で横断する。
 
 ## 軸1: 提供主体と実行場所
 
 | 分類 | 例 | 性格 |
 | --- | --- | --- |
-| プラットフォーム公式CLI | Claude Code (Anthropic) / Codex CLI (OpenAI) / Gemini CLI (Google) / Qwen Code (Alibaba) | モデル提供元が直接配布。モデルの能力を最も素直に引き出し、ベンチマークの基準にもなる |
+| プラットフォーム公式CLI | Claude Code (Anthropic) / Codex CLI (OpenAI) / Gemini CLI (Google) / Qwen Code (Alibaba) | モデル提供元が直接配布。そのモデルで最も検証されており、ベンチマークの実行環境にも使われる（後述） |
 | OSS CLI | OpenCode (SST) / OpenClaw / Hermes Agent (Nous Research) / Pi / Aider / Goose (Block) | プロバイダ非依存。モデルを切り替えられる |
 | IDE統合 | Cursor Agent | エディタプロセス内で完結し、権限モデルと UI が CLI 型と異なる |
 | ランタイム/ラッパー | deepseek-harness / ori harness (OpenRouter) | 前者はプラグインの動的差し替え、後者は請求・ガードレールの一元化が主目的 |
@@ -39,6 +41,8 @@ harness ごとに設定ファイルが違う。これが乗り換えの摩擦に
 | Pi | RPC（`pi --mode rpc`、JSON Lines）|
 
 `AGENTS.md` が事実上の共通形式に寄りつつある一方、権限や memory の置き場所は harness 固有のままで、ここは移植できない。
+
+（表の Pi の行だけ粒度が違う。ファイルで設定するのではなく、外部プロセスから駆動する界面そのものが設定にあたる、という設計だからである。この節の最後で触れる）
 
 この摩擦を吸収しようとするのが、`.agent/` のような共通フォルダに memory と skills を置いて複数 harness から読ませる「可搬 brain」の試みである。Claude Code 用に育てた資産をそのまま OpenCode や Cursor Agent に持ち込む、という発想になる。
 
