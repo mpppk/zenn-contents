@@ -38,15 +38,19 @@ harness ごとに設定ファイルが違う。これが乗り換えの摩擦に
 | OpenCode | `opencode.json` + `AGENTS.md` |
 | OpenClaw | `AGENTS.md` 自動注入 + `openclaw agents add --workspace` |
 | Hermes Agent | プロファイルごとの `config.yaml` と、エージェントの人格を定義する `SOUL.md` |
-| Pi | RPC（`pi --mode rpc`、JSON Lines）|
+| Pi | `~/.pi/agent/settings.json` + `.pi/settings.json` / `AGENTS.md` または `CLAUDE.md` |
 
 `AGENTS.md` が事実上の共通形式に寄りつつある一方、権限や memory の置き場所は harness 固有のままで、ここは移植できない。
 
-（表の Pi の行だけ粒度が違う。ファイルで設定するのではなく、外部プロセスから駆動する界面そのものが設定にあたる、という設計だからである。この節の最後で触れる）
-
 この摩擦を吸収しようとするのが、`.agent/` のような共通フォルダに memory と skills を置いて複数 harness から読ませる「可搬 brain」の試みである。Claude Code 用に育てた資産をそのまま OpenCode や Cursor Agent に持ち込む、という発想になる。
 
-Pi のように設定ファイルではなく RPC を界面にしている harness は方向性が違う。親プロセスが `pi --mode rpc` を spawn し、stdin/stdout に JSON Lines でコマンドとイベントを流す。モデル呼び出し・ツール実行・コンテキスト管理・認証は Pi 側に残るので、オーケストレータは Node ランタイムの同梱や依存の衝突を避けたまま外から駆動できる。複数 harness を束ねる層を自分で書くなら、この形が扱いやすい。
+この観点で見ると Pi が目を引く。[公式ドキュメント](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/usage.md)によれば、Pi は `AGENTS.md` と `CLAUDE.md` の**両方**を読み、グローバルから親ディレクトリを遡ってカレントまで探索する。さらに `SYSTEM.md` でシステムプロンプトごと差し替えられる（`APPEND_SYSTEM.md` なら追記）。Claude Code 用に育てた資産も Codex CLI 系の資産も設定変更なしで持ち込めるので、**乗り換えコストはむしろ低い部類**である。
+
+ここで軸をもう一つ分けておきたい。**設定の可搬性と、外から駆動するための界面は別の話である。** 混同すると「Pi は設定ファイルを持たず RPC で駆動する harness だ」といった誤解になる。恥ずかしながら、この記事の初稿で私はそう書いていた。Pi は上記の通り設定ファイルを一通り持ったうえで、**それとは独立に**埋め込み用の界面を提供している。
+
+その界面が RPC モードである。親プロセスが `pi --mode rpc` を spawn し、stdin/stdout に JSON Lines でコマンドとイベントを流す。モデル呼び出し・ツール実行・コンテキスト管理・認証は Pi 側に残るので、オーケストレータは Node ランタイムの同梱や依存の衝突を避けたまま外から駆動できる。セッションは append-only なエントリのツリーで、entry id が耐久カーソルになるため、`get_entries` に前回見た id を渡せば再起動後も差分だけ取れる。
+
+面白いのは、[公式ドキュメント](https://pi.dev/docs/latest/rpc)が Node.js / TypeScript ユーザーには RPC ではなく SDK（`@earendil-works/pi-coding-agent` の `AgentSession`）を直接使うよう勧めている点である。RPC は別言語やリモート実行のための選択肢であって、Pi を使う唯一の作法ではない。複数 harness を束ねる層を自前で書くなら、この界面が用意されていること自体が効いてくる。
 
 ## 軸3: 権限・安全・コンテキスト
 
@@ -127,3 +131,5 @@ harness 差がベンチマークのスコアに与える影響を分離した研
 - [Building Effective AI Agents — Anthropic](https://www.anthropic.com/engineering/building-effective-agents) — ワークフローとエージェントの区別、3 つの設計原則、ACI
 - [OpenCode Docs — Config](https://opencode.ai/docs/config/) / [Rules](https://opencode.ai/docs/rules/) — permission rules と `AGENTS.md` の扱い
 - [pi-coding-agent を使わずに OpenCode Go × Hermes Agent を選んだ理由](https://zenn.dev/jodycraft/articles/c35818f2f6c28a) — 実運用での選定理由とコスト実測
+- [Pi Documentation — RPC Mode](https://pi.dev/docs/latest/rpc) / [settings.md](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/settings.md) / [usage.md](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/usage.md) — Pi の設定ファイル、コンテキストファイルの探索順序、RPC の仕様
+- [Hermes Agent Docs](https://hermes-agent.nousresearch.com/docs/) — `config.yaml` と `SOUL.md`、agentskills.io 互換の Skills
