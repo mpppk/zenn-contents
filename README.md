@@ -55,8 +55,8 @@ Zenn 側の GitHub 連携が、ダッシュボードに登録したデフォル�
 ## ローカルでの書き方
 
 ```sh
-yarn install
-yarn new:article   # articles/ に雛形を生成する
-yarn preview       # http://localhost:8000 でプレビュー
+bun install
+bun run new:article   # articles/ に雛形を生成する
+bun run preview       # http://localhost:8000 でプレビュー
 ```
 
