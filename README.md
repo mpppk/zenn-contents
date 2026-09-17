@@ -12,16 +12,11 @@
 | `articles/` | 記事。ここに置いた `.md` は連携先ブランチへの push でそのまま Zenn へデプロイされる |
 | `books/` | 本。1 冊 1 ディレクトリで、`config.yaml` にチャプターの並びを書く |
 | `images/` | 記事・本から参照する画像。**リポジトリ直下のここだけが対象**。最初の画像を置く時に作る |
-| `templates/` | 記事の雛形。Zenn のデプロイ対象ではないので、ここに置いたものは公開されない |
 | `dataset/` | `books/imagine-app-doc` のチュートリアルで使うサンプル画像 |
 
 ## デプロイの仕組み
 
-**GitHub Actions は要らない。** Zenn 側の GitHub 連携が、ダッシュボードに登録したブランチへの
-push を検知して自動でデプロイする。このリポジトリのデフォルトブランチは `master`。
-
-記事の公開・非公開はフロントマターの `published` が決める。デプロイされること自体は
-公開を意味しない。**新規記事は `published: false` で作り、公開すると決めた時だけ true にする。**
+Zenn 側の GitHub 連携が、ダッシュボードに登録したデフォルトブランチへのpush を検知して自動でデプロイする。
 
 参考: [アカウントにGitHubリポジトリを連携してZennのコンテンツを管理する](https://zenn.dev/zenn/articles/connect-to-github)
 
@@ -60,12 +55,8 @@ push を検知して自動でデプロイする。このリポジトリのデフ
 ## ローカルでの書き方
 
 ```sh
-yarn install
-yarn new:article   # articles/ に雛形を生成する
-yarn preview       # http://localhost:8000 でプレビュー
+bun install
+bun run new:article   # articles/ に雛形を生成する
+bun run preview       # http://localhost:8000 でプレビュー
 ```
 
-`templates/` の雛形から書き始める場合は、`articles/<slug>.md` へコピーする。
-
-- `templates/article-explainer.md` — SaaS やフレームワークの使い方と、その思想を解説する記事
-- `templates/article-comparison.md` — ある観点で複数の SaaS やフレームワークを比較する記事
