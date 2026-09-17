@@ -5,6 +5,7 @@
   "repository": "https://github.com/mpppk/zenn-contents",
   "author": "mpppk <niboshiporipori@gmail.com>",
   "license": "MIT",
+  "packageManager": "bun@1.4.2",
   "dependencies": {
     "zenn-cli": "^0.5.3"
   },
