@@ -26,7 +26,7 @@ research→outline→article→refineという4フェーズで執筆する
 執筆する記事の骨子を検討するフェーズ
 
 - 執筆対象概念フォルダ以下にoutline.mdが無ければ新規作成する
-- outline.mdでは、memo.mdの内容をもとに記事にどんな内容を記載するかの骨子を箇条書きで記載する。項目ごとに参照元のURLをネストした箇条書きで記載する。URLには「参考: 」というprefixを付与する
+- outline.mdでは、memo.mdの内容をもとに記事にどんな内容を記載するかの骨子を箇条書きで記載する。項目ごとに参照元のURLを末尾に記載する。URLは[参考](...)という形のリンクにする
   - 例
     - Thinkはトップレベルエージェント(WebSocket経由で`useAgentChat`と通信)とサブエージェント(RPC経由で親エージェントが`chat()`で駆動)の両方として動作する
       - 参考: [https://developers.cloudflare.com/agents/harnesses/think/](https://developers.cloudflare.com/agents/harnesses/think/)
