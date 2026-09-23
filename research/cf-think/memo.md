@@ -1,55 +1,32 @@
-## Thinkとは何か
-* Thinkはトップレベルエージェント(WebSocket経由で`useAgentChat`と通信)とサブエージェント(RPC経由で親エージェントが`chat()`で駆動)の両方として動作する [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* Cosenseの関連メモ: Cloudflare Agents SDKはWorkers基盤上で状態を持つAIエージェントを構築するSDKで、セッションごとのSQLストレージとdurable executionを持つ [参考](https://scrapbox.io/niki-ai/Cloudflare_Agents_SDK)
+# cf-think memo
 
-## Think発表時のブログ
-* 2026-04-15のProject Think発表では、Agents SDKの次世代としてdurable execution・sub-agent・sandboxed code execution・persistent sessionを束ねたものとして紹介された [参考](https://blog.cloudflare.com/project-think/)
-{TODO: ブログ内容のサマリを箇条書きで記載}
+## QA
 
-## AI Agent実装時に必要な要素
-* `@cloudflare/think`はAgents SDK上のopinionatedなチャットエージェント基底クラスで、`getModel()`を実装するとagentic loop・永続化・streaming・ツール実行・stream resumption・extensionsが動作する [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-{TODO: ここで挙げられている要素それぞれの説明を箇条書きで記載}
-
-## AIChatAgentとの違い
-* どちらも`Agent`を継承し、同じ`cf_agent_chat_*` WebSocketプロトコルを使う [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* AIChatAgentはプロトコルアダプタで、`onChatMessage`内で`streamText`呼び出しやツール配線を利用者が書く。Thinkは`getModel()`・`getSystemPrompt()`または`configureSession()`・`getTools()`を上書きし、既定の`onChatMessage`がagentic loopを実行する [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* 最小サブクラスはAIChatAgentが約15行に対してThinkは3行(`getModel()`のみ) [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* ストレージはAIChatAgentがフラットなSQLテーブル、ThinkはSessionによるツリー構造メッセージ・context block・compaction・FTS5 [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-
-## 最小実装と配線
-* `npm i @cloudflare/think @cloudflare/ai-chat agents ai @cloudflare/shell zod workers-ai-provider`で導入し、`Think`を継承して`getModel()`でWorkers AIモデルを返す。`routeAgentRequest`でWorker entryから振り分ける [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* Getting Startedでは`@cf/moonshotai/kimi-k2.6`を使った`MyAgent`の定義、`wrangler.jsonc`の`ai` binding・DO binding・migration設定、React側の`useAgent`+`useAgentChat`が手順化されている [参考](https://developers.cloudflare.com/agents/think/getting-started/)
-* wrangler設定例は`compatibility_date`・`nodejs_compat`・`durable_objects.bindings`・`new_sqlite_classes`を含む [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* クライアントは既存の`useAgentChat`がそのまま使える [参考](https://blog.cloudflare.com/project-think/)
-
-## Session・memory・context管理
-* `configureSession`で`soul`(読み取り専用の identity)と`memory`(書き込み可能な事実メモリ)などのcontext blockを定義し、モデルが`set_context`ツールで更新する [参考](https://developers.cloudflare.com/agents/think/getting-started/)
-* 会話履歴はツリー構造で、regenerationは旧応答を残したまま分岐する。compactionは古いメッセージの削除ではなくoverlayによる非破壊サマリ [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* FTS5によるセッション内・セッション横断の全文検索がある [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-
-## ツール統合
-* 毎ターンでworkspaceツール・`getTools()`の独自ツール・extensionツール・sessionツール(`set_context`等)・skillツール・MCPツール・clientツールがマージされる [参考](https://developers.cloudflare.com/agents/think/getting-started/)
-* 組み込みworkspaceファイルツール(read/write/edit/list/find/grep/delete)があり、`read`は行番号付きテキストと画像・PDFのマルチモーダル受け渡しに対応する [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* code executionはDynamic Workersと`@cloudflare/codemode`上の`createExecuteTool`で、workspace filesystem・browser(CDP)・任意ToolSetをconnectorとして束ね、実行はdurableに記録される [参考](https://github.com/cloudflare/agents/releases/tag/%40cloudflare%2Fthink%400.9.0)
-* agentがTypeScriptでextensionを自作し、Dynamic Workerに読み込んで新ツールを登録できる。extensionはDOストレージに永続化される [参考](https://blog.cloudflare.com/project-think/)
-
-## ターン起動API
-* `runTurn(options)`が統一入口で、`wait`(結果を待つ)・`submit`(durableに受理して後で状態確認)・`stream`(RPC向けにコールバックへ流す)の3モードがある [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* 旧来のショートカットとして`saveMessages()`・`submitMessages()`・`chat()`・`continueLastTurn()`・`addMessages()`が残る。用途別の対応表がドキュメントにある [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* `submit`は`submissionId`や`idempotencyKey`による冪等な再送が可能で、webhookやRPC呼び出し向け [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* `addMessages()`は推論を起動せずtranscriptに追記するため、ツール`execute`内から呼んでもデッドロックしない [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-
-## 長時間実行・sub-agent・recovery
-* chat turnはrecovery fiber内で実行され、DOがevictされても中断したターンを継続またはリトライする。応答は`accepted`・`streaming`・`completed`でスナップショットされる [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* `chat()`による親子間streaming RPC、`agentTool()`による委譲、`getScheduledTasks()`による定期ターン、`startFiber()`によるwebhook前後の冪等処理、Workflows連携がある [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* primitivesとしてfibersによるdurable execution・独立SQLiteを持つsub-agent・sandboxed code execution(execution ladder: workspace・isolate・npm・browser・sandbox)が単体利用可能 [参考](https://blog.cloudflare.com/project-think/)
-
-## lifecycle・observability
-* `beforeTurn`・`onChatResponse`などのhookが毎ターンで発火する [参考](https://developers.cloudflare.com/agents/think/getting-started/)
-* 内部で`wrapAISDK()`による計装済みで、`observability.traces.enabled`を有効化すると`invoke_agent`・`chat`・`execute_tool`・`tool_approval`スパンがWorkers Observabilityに送られ、DashboardのAgents viewで確認できる [参考](https://developers.cloudflare.com/agents/harnesses/think/)
-* モデルはWorkers AIのほか差し替え可能で、CosenseのAgents SDKメモでも複数モデル差し替え対応として整理されている [参考](https://scrapbox.io/niki-ai/Cloudflare_Agents_SDK)
-
-## 注意点・experimental
-* Project Thinkはexperimentalで、API surfaceは安定しているが変更の可能性がある [参考](https://blog.cloudflare.com/project-think/)
-* 2026-08-18の`@cloudflare/think@0.16.0`ではconvention-drivenなThink framework層(Vite plugin・生成Worker entry・`think` CLI・Studio等)が削除され、hand-writtenなWorker entryによる明示的runtime利用に戻った。既存利用者は`agents/vite`・`routeAgentRequest`・`wrangler types`等への移行が必要 [参考](https://github.com/cloudflare/agents/releases/tag/%40cloudflare%2Fthink%400.16.0) [参考](https://github.com/cloudflare/agents/pull/1613)
-* AI SDKはv6とv7を支援し、`ai`と`@ai-sdk/react`のメジャーを揃える必要がある [参考](https://developers.cloudflare.com/agents/harnesses/think/)
+- Q: Project Thinkとは何か
+  - A: Agents SDKの次世代として2026-04-15に発表された、durable execution・sub-agent・sandboxed code execution・persistent sessionのプリミティブセットと、それらを束ねたThinkベースクラス。詳細は research/cf-think/project-think.md を参照。
+- Q: Facetsについて詳しく知りたい。公式ドキュメントはあるか
+  - A: 公式ドキュメントとして Sub-agents ページ (https://developers.cloudflare.com/agents/runtime/execution/sub-agents/) がある。Facetsはその実装基盤で、親と同居する子Durable Objectsであり、SQLiteは完全分離される。`subAgent(Cls, name)` で取得し、型付きRPCスタブで子独自メソッドを呼ぶ。親のみDO binding/migrationが必要で、子単体クラスは不要。`abortSubAgent` は実行停止・ストレージ保持、`deleteSubAgent` は停止＋ストレージ削除で、いずれも子孫へ推移する。`hasSubAgent` / `listSubAgents` / `onBeforeSubAgent` で存在確認・列挙・経路ゲートを行う。子からは `parentPath` / `selfPath` / `parentAgent(Cls)` で親を参照する。クライアントは `useAgent({ sub })` や `buildAgentPath` / `buildAgentUrl` / `routeSubAgentRequest` / `getSubAgentByName` で子へ到達する。schedule・fiber・`this.sql`・`setState` は子スコープで動作するが、アラーム実体は親が所有しSDKが子へ振り分ける。関連として Agents as tools (https://developers.cloudflare.com/agents/runtime/execution/agent-tools/) はsub-agent基盤の上段抽象。詳細まとめは research/cf-think/sub-agents.md を参照。
+- Q: クライアント側のagents/reactはThinkフレームワーク専用か
+  - A: 専用ではない。`agents/react` の `useAgent` はあらゆるAgentに接続する汎用クライアントで、公式Client SDK (https://developers.cloudflare.com/agents/communication-channels/chat/client-sdk/) ではCounterやGameAgentなど非チャット例にも使われる。Think利用時も `useAgent` で接続した上で `@cloudflare/ai-chat/react` の `useAgentChat` を重ねる形であり、ThinkはAIChatAgentと同じWebSocketプロトコルを使うため既存UIが動作する。Think専用に見えるクライアント側要素は `useAgentChat` の `tools` オプション等のチャット層である。
+- Q: Vercel AI SDKを併用していたサンプルはどこか
+  - A: 導入コマンド中の `ai` がVercel AI SDKである。Project Thinkブログの利用開始セクション (research/cf-think/project-think.md の導入・サーバー例・クライアント例) で `npm install @cloudflare/think agents ai @cloudflare/shell zod workers-ai-provider` と `useAgent` + `@cloudflare/ai-chat/react` の `useAgentChat` が併用される。Think内部も毎ターンのエージェントループで `streamText` を呼ぶ。survey.mdではThinkドキュメント由来として `npm i ... ai ...` とAI SDK v6/v7対応 (`ai` と `@ai-sdk/react` のメジャー一致) が整理されている。汎用チャット例はagents-sdkスキルのclient-sdkリファレンス (`agents` + `@cloudflare/ai-chat` + `ai` + `@ai-sdk/react`) にある。
+- Q: サーバはstreamTextなのにクライアントがagents/reactである必要性は何か
+  - A: クライアントもAI SDKを使っていないわけではなく、`useAgentChat` はAI SDKの `useChat` をネイティブWebSocketトランスポートでラップしたものである (https://developers.cloudflare.com/agents/communication-channels/chat/chat-agents/)。AI SDK既定の `useChat` はHTTP POST想定のため、特定DOインスタンスへの経路 (`/agents/<name>/<id>`)、WebSocket接続の確立・自動再接続、中断ストリーム再開、全クライアントへのbroadcast同期、state同期・RPC stub、認証クエリ・sub経路といったAgent側プロトコル (`CF_AGENT_USE_CHAT_REQUEST` 等のWebSocket往復) を扱えない。その接続層を `useAgent` / `AgentClient` が担い、チャットUI層がその接続を受け取ってAI SDKのメッセージ・status管理に載せる二層構造である。React以外は `agents/chat/transport` の `WebSocketChatTransport` と `AgentClient` をAI SDKのtransportに渡す。
+- Q: AI SDKがHTTP POSTなのにAgentがWebSocketを使うモチベーションは何か
+  - A: AI SDK既定のHTTP POSTはクライアント発・サーバ応答の単発往復で、応答は要求者にしか返らない。Agentは同一インスタンスに複数クライアントが同時接続する前提で、メッセージ・stateの全接続へのリアルタイムbroadcast、サーバ発のpush (サーバ駆動ターン、recovering等の状態フレーム、state更新) が必要であり、全二重の永続接続が要る (https://developers.cloudflare.com/agents/communication-channels/chat/chat-agents/、https://developers.cloudflare.com/agents/runtime/communication/websockets/)。1本の接続にチャット streaming・state同期・RPC・プロトコルメッセージを多重化し、自動再接続・再開・再同期で長時間セッションを維持する。HTTPが不要なわけではなく、単発・サーバ間・REST的用途には `agentFetch` / `onRequest` があり、公式に使い分け表がある (https://developers.cloudflare.com/agents/communication-channels/chat/client-sdk/)。
+- Q: Thinkでは事前定義メソッドのoverrideで挙動変更するのか
+  - A: その理解でよい。Thinkはopinionated frameworkで、既定 `onChatMessage` がagentic loop全体を実行し、利用者は個別部品をoverrideする (https://developers.cloudflare.com/agents/harnesses/think/)。設定系は `getModel()` (必須・多くはこれのみ)、`getSystemPrompt()` (context blockなし時のfallback)、`getTools()`、`getScheduledTasks()`、`configureSession()` (context block・compaction・search・skills。block追加時はsystem promptがblockから構築される) (https://developers.cloudflare.com/agents/harnesses/think/configuration/)。段階フックは `beforeTurn` (TurnConfig) → ループ内 `beforeStep` (StepConfig・prepareStep転送) → `beforeToolCall` (ToolCallDecision) → `afterToolCall` → `onStepFinish` → `onChunk` → `onChatResponse` / `onChatError` の順で発火する (https://developers.cloudflare.com/agents/harnesses/think/lifecycle-hooks/)。AIChatAgentが `onChatMessage` 全体を自前実装するのに対し、Think最小サブクラスは `getModel()` のみの約3行である。
+- Q: 15行と3行の差は12行に過ぎないが具体的に何が違うのか
+  - A: 行数差は最小接着コードの話で、能力差はその背後にある。AIChatAgentの約15行は `onChatMessage` 内の `streamText` 呼び出し・ツール配線・メッセージ変換・Response返却であり、以降の拡張 (メモリ、compaction、検索、分岐、sub-agent RPC、投稿系API、回復、拡張機能等) は利用者の自前実装になる。Thinkの3行で得られるのは既定 `onChatMessage` による完全なagentic loopに加え、Sessionによるツリー構造メッセージ・context block・非破壊compaction・FTS5、非破壊regeneration分岐、手動でない永続メモリ、`chat()` によるsub-agent RPC、`submitMessages()` / `continueLastTurn()` までの投稿系API、出力切り捨て・sanitization・stream resumption・client tool対応・workspaceファイルツール・計装・durable recoveryである (https://developers.cloudflare.com/agents/harnesses/think/)。AIChatAgent利用者はLLM呼び出しを永続的に所有し、Think利用者は個別部品のoverrideに留まる点が実質の違いである。
+- Q: AIChatAgentではユーザがagentic loopを書くのか。15行の具体例はどうか
+  - A: `onChatMessage` 内にLLM呼び出しを書く点ではそうである。公式最小例 (https://developers.cloudflare.com/agents/communication-channels/chat/chat-agents/) は `AIChatAgent` 継承で `onChatMessage()` 内に `createWorkersAI({ binding: this.env.AI })` によるモデル取得、`convertToModelMessages(this.messages)` によるメッセージ変換、`streamText({ model, messages })` 呼び出し、`toUIMessageStreamResponse()` でのResponse返却を書くものである。トークン毎の反復を手書きするのではなく、多段階ツール呼び出しはAI SDKの `streamText` 内部で行われ、利用者が所有するのはモデル選択・メッセージ変換・system prompt・ツール配線・応答変換である。ツール追加時は `streamText` へ `tools` とsystem promptを足す形になり、メモリやcompaction等はさらに自前実装となる。Thinkはこの `onChatMessage` 全体を既定実装が担う。
+- Q: 比較表のProgrammatic turnsとは何か
+  - A: ブラウザのチャット送信ではなく、サーバ側コードからモデルターンを起動・継続することである。用途は定期実行、webhookハンドラ、メール着信、RPC呼び出し、親から子への委譲など能動動作である。AIChatAgent側は `saveMessages()` (永続化して `onChatMessage()` を起動し、実行中ターン完了を待って直列化する。`persistMessages()` は起動しない点と対照) が挙げられる。Think側は `saveMessages()` に加え `submitMessages()` (推論前に耐久受理して即時応答し、webhook・RPC向けに冪等再送と状態確認・取消に対応。関数形は不可)、`continueLastTurn()` (新メッセージなしの継続) があり、いずれも `runTurn()` のwait・submit・streamモードに集約される (https://developers.cloudflare.com/agents/harnesses/think/、https://developers.cloudflare.com/agents/harnesses/think/programmatic-submissions/、https://developers.cloudflare.com/agents/communication-channels/chat/chat-agents/)。
+- Q: ThinkのエージェントループはVercel AI SDKのstreamTextのループをそのまま利用しているのか
+  - A: そのまま利用しているわけではない。1ターンあたり1回の `streamText` 呼び出しを行い、モデル→ツール呼び出し→実行→結果追加の反復自体はAI SDK内部の `stopWhen` 駆動ループに委ねるが、その呼び出しの前後とオプションをThinkが所有・ラップする。`_runInferenceLoop` → `_prepareInferenceInvocation` がコンテキスト組み立て (system prompt・context block・履歴)・ツールマージ (workspace・fetch・getTools・action・extension・context・skill・MCP・client)・`beforeTurn` 発火を行った後に `streamText` を1回呼び、ソース内のコメントも「ツールが重い長い1ターンは one streamText loop の中でプロンプトを段階的に成長させる」と説明する。終了条件は `stopWhen: [stepCountIs(finalMaxSteps), ...(構造化出力時のhasToolCall), ...(利用者指定stopWhen)]` で渡し、`maxSteps` (既定10) は安全上限として常に残り、利用者の `stopWhen` は追加のみである。ラップ内容は各ツール `execute` の包み込みによる `beforeToolCall` のblock/substitute/allow強制、`prepareStep` の包み込みによる `beforeStep`・先制compactionガード・構造化出力 (`final_answer`) 安全網・文字列モデル解決、`experimental_onToolCallFinish` 経由の `afterToolCall` 発火 (v6/v7イベント差異を正規化)、`onStepFinish`→`onStepEnd`・`onChunk`→`onChunk` 転送、共通オプション名 (`system`・`onStepFinish`・`experimental_onToolCallFinish` 等) によるv6/v7両対応 (`ai` 名前空間ごと `wrapAISDK` に通す) である。外側のターン所有 (Session永続化・compaction・再開可能ストリーム・sanitization・stall watchdog・submit/continue系API) と合わせ、AI SDKはステップ反復の実行機関、Thinkはターンの組み立て・制約・観測の所有者という分担になる (https://github.com/cloudflare/agents/blob/main/packages/think/src/think.ts、https://developers.cloudflare.com/agents/harnesses/think/)。
+- Q: submitMessages() と continueLastTurn() で具体的に何ができるのか
+  - A: `submitMessages(messages, { submissionId, idempotencyKey, metadata })` は推論前に作業を耐久受理して即時応答する。直列化可能 `UIMessage[]` のみ受け (関数形不可)、`{ submissionId, status, accepted }` を返す。状態はpending → running → completed / aborted / skipped / errorを辿り、後から照会・列挙・取消・削除する。同 `idempotencyKey` 再送は既存submissionを `accepted: false` で返し、メッセージ重複を防ぐ。webhook・RPCの高速応答と再送、定期実行の裏経路に使う (https://developers.cloudflare.com/agents/harnesses/think/programmatic-submissions/)。`continueLastTurn(body?, options?)` は新ユーザーメッセージなしに最新アシスタント文の後へ再モデル呼び出しし、結果を `continuation: true` の新アシスタント文として永続化する (既存文への追記ではない)。最終文がアシスタント文でなければ `{ requestId, status: "skipped" }` を返す。`body` で今回の継続用body上書き、`signal` で取消する。承認・ツール結果後の継続や追い生成に使う (https://developers.cloudflare.com/agents/harnesses/think/sub-agents/)。
+- Q: saveMessagesなどは廃止されて今後はrunTurnに集約していく方針なのか
+  - A: 廃止の方針ではない。ドキュメントのChoose a turn API節は、全ターン起動手段が単一の公開入口 `runTurn(options)` に funnel する一方で、旧来メソッドは convenience shortcuts として残り、各ショートカットのシグネチャは不変と明記する。対応はwait→`saveMessages()`、submit→`submitMessages()`、stream→`chat()` で、`runTurn({ continuation: true })` が `continueLastTurn()` 相当である。使い分けは狭い表面が欲しければショートカット、単一メンタルモデルなら `runTurn()` とされる。ソース側でも `saveMessages`・`submitMessages`・`continueLastTurn`・`chat` に `@deprecated` は付いておらず、`@deprecated` は `system`→`instructions`・`onStepFinish`→`onStepEnd` 等の別名整理のみである。なお `runTurn` 自体はExperimental扱い (形状は安定だがexperimental卒業前に変化し得る) で、`continueLastTurn` はprotectedのまま高度なサブクラス・回復コード向けに残り、`addMessages()` はターン起動なしのtranscript書き込みとして別物である (https://developers.cloudflare.com/agents/harnesses/think/#runturn、https://github.com/cloudflare/agents/blob/main/packages/think/src/think.ts)。
+- Q: runTurn利用例のexamplesメソッドは誰がどう呼ぶ想定なのか
+  - A: ドキュメントは呼び出し元を明示していない。`examples` はフレームワークが認識する特別な名前ではなく (think.ts内に存在しない)、wait・submit・stream・continuationの4利用パターンを一箇所に並べた説明用の器である。ただし引数 `inboundEventId` がsubmit例の `idempotencyKey` に渡され、コメントがwebhook想定 ("Process this webhook"、dedupe; safe to retry) のため、一回性の外部トリガを念頭に置いたスケッチと読める。実際のサーバ側ターン起動経路は定期実行 (`getScheduledTasks()`)、webhook・HTTPハンドラ、RPC呼び出し元、親エージェントからの委譲、メール着信などであり、Programmatic submissions文書もsubmit直後に `Response.json` を返すwebhookハンドラ像を示す。DO隔離域の外から呼ぶ場合はAgents SDKの一般則としてRPC公開 (`@callable` 等) が要る (https://developers.cloudflare.com/agents/harnesses/think/#choose-a-turn-api、https://developers.cloudflare.com/agents/harnesses/think/programmatic-submissions/、https://developers.cloudflare.com/agents/api-reference/callable-methods/、https://github.com/cloudflare/agents/blob/main/packages/think/src/think.ts)。
