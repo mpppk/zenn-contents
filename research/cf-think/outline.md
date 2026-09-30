@@ -1,0 +1,39 @@
+- Project Thinkとは
+  - durable execution・sub-agent・sandboxed code execution・persistent sessionなどを組み込んだ、opinionatedなAI Agentフレームワーク
+  - Previewとしてリリースされ、2026/09/26時点でもThinkが依存するSession APIはExperimentalである
+- AIChatAgentとの比較
+  - CloudlfareでAIチャットを実装するためのツールとして、Thinkとは別に、よりlow levelな実装ができるAIChatAgentもある
+  - AIChatAgentとThinkはどちらもAgent classを継承している。ThinkはAIChatAgentを継承して\*\*いない\*\*
+  - [違いは https://developers.cloudflare.com/agents/harnesses/think/#think-vs-aichatagent にまとめられている](https://developers.cloudflare.com/agents/harnesses/think/#think-vs-aichatagent)
+  - Thinkの最もopinionatedな要素はSession APIによってもたらされている。詳しくは後述
+  - Thinkは1turnごとのagent loopの実現はVercel AI SDKに任せている
+  - 公式には、AIChatAgentが最小構成の実装に15行必要なのに対してThinkは3行であることを歌っているが、これはVercel AI SDKによるエージェントループを自分で書くかThinkが内部で自動的に適用するかだけの違いで大した違いではない(筆者の意見)。それよりもSession APIを利用したいかどうかがThinkの採用可否を検討するのに重要
+  - 
+- Session API
+  - Session APIは単なるメッセージの保存だけでない、高度な機能を提供している
+    - tree-structured message
+    - メッセージ再生成時やcompaction時も、前のメッセージは削除されない
+    - FTS5によるメッセージ検索
+- Sub-agents
+  - CloudflareにおけるサブエージェントはFacetsという基盤上で実現される
+  - 呼び出し元のAgentとsub agentは個別のストレージを持ち、個別のV8 Isolateで動作するが、"same machine"で動作する。そのためagent間の通信は高速に行うことが可能
+- ブラウザからの呼び出し
+  - agents/reactを利用する。Cloudflare Agentはクライアントとの通信をWebSocketで行うために、Vercel AI SDKのuseChatをラップしたuseAgentChatを提供している
+  - WebSocketを利用して、サーバで発生したイベントをクライアントにbroadcastする機能や、サーバからのpushなどを実現している
+  - @callable
+    - Agentクラスのメソッドに@callableでこれー他を付与すると、そのメソッドはWebSocket経由のRPCとしてクライアントに公開される
+      - Server Actionsに似てますね(筆者の意見)
+      - クライアントから呼び出されるということは、すべての引数は利用前に検証が必要。また、引数にTypeScriptの型がついていても、バリデーションして確認するまでは信用できないことに注意
+- 挙動のoverride
+  - [https://developers.cloudflare.com/agents/harnesses/think/configuration](https://developers.cloudflare.com/agents/harnesses/think/configuration/)に記載のメソッドをオーバーライドすることで挙動を変更できる
+- Programmatic turns
+  - 通常のユーザとの対話以外の経路(スケジュールされたメッセージやwebhookなど)でのメッセージ送信のためにいくつかメソッドが用意されている
+  - saveMessages
+    - ユーザ入力以外の経路でメッセージを追加する
+  - submitMessages
+    - ユーザ入力以外の経路でメッセージを追加する。回答の生成完了を待たない
+  - continueLastTurn
+    - 同じ会話履歴から回答を再生成する
+- Action
+  - toolのラッパー
+  - 冪等性担保、認可、承認などの機能を追加する
