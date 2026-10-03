@@ -21,33 +21,33 @@ Train セクションでは Content (Fin が知る内容)、Guidance (Fin の振
 
 Procedures は Tasks の後継であり、返金、サブスク更新、注文追跡などの多段階処理を担う。自然言語の手順書のように記述し、if/else 分岐やコード (日付計算、適格性検証、レコード更新) で決定論的制御を付与する。会話は非線形のため毎ターン推論し、適切なステップへ skip、切替する。Stripe、Shopify、Linear などの外部システムとは Data connectors、MCP で連携する。共通手順は sub-procedures として再利用できる。逐次実行であり、並列処理には対応しない。
 
-![Procedure editor](images/train-procedures.webp)
+![Procedure editor](https://i.gyazo.com/108a2f7c68f33ab1249a81429c952a85.png)
 *Procedure: Withdrawal request の編集画面。When to use this procedure、対象 (Everyone on Web, iOS, Android)、手順内の Use: Verify identity などの Data Connector 選択、右上の Guidance、Test、Save、Set live。from https://fin.ai/train*
 
 操作の流れは Train > Tasks (Procedures) で New task を開き、trigger の title と description (使う場面と使わない場面を 3-5 文で記述)、Trigger when と Don't trigger when の example questions (10 件程度)、channels と audience rules、Give Fin instructions の手順ブロック (動詞始まり、if + else 形式)、Data connectors (@ で Connect with external system)、attributes と temporary attributes、task 内 guidance、Wait for webhook、会話タグ付け、Escalate to the team を設定する。AI-generated task instructions では説明文から構造化プロンプトを自動生成できる。live task の編集は Save as draft で draft 版を作り、live 版に影響させず Preview と Simulations で検証してから Set live する。
 
-![Tasks list](images/test-task-editor.png)
+![Tasks list](https://i.gyazo.com/8c52b01e9994e55393a2ab9bd8b5af81.png)
 *Train > Tasks の一覧画面。左ナビの Train 配下に Content、Guidance、Escalation、Tasks、Suggestions が並び、右上に New task がある。from Fin Tasks ヘルプ*
 
 ### 1-2. Content: 回答の根拠を与える
 
 Help Center 記事、内部ドキュメント、PDF、URL、Zendesk 同期などの knowledge source を Content library で一元管理する。Fin は複数 source から関連情報を組み立てて回答する。Audiences では plan、location、brand などで content を出し分ける。
 
-![Content](images/train-content.webp)
+![Content](https://i.gyazo.com/22e2de302d97c23455aa52793a70c254.png)
 *Add your existing content の図。from https://fin.ai/train*
 
 ### 1-3. Guidance: 話し方と policies を指示する
 
 tone of voice (professional、friendly、humorous など) と回答の長さを選び、自然言語の instructions で brand の声、policies、問い合わせの捌き方を教える。escalation の条件も deterministic rules と自然言語 guidance の両方で定義できる。personality 設定は Guidance ページに移管されている。
 
-![Guidance](images/train-guidance.webp)
+![Guidance](https://i.gyazo.com/1a178023c39552f67eaa2b80452c32a0.png)
 *Define Fin's behavior の図。from https://fin.ai/train*
 
 ### 1-4. Suggestions と Data connectors
 
 Suggestions は解決できなかった会話を元に content の改善案 (更新、新規作成、重複指摘) を AI が提示する。Intercom、Zendesk、Salesforce 横断で動作し、却下からも学習する。Data connectors は外部システムへの接続であり、回答の personalization と Tasks、Procedures 内の action 実行に使う。IDV 有効時は name、email、city、country などの基本属性を自動取得する。Vision は画像 (スクリーンショット、請求書、エラー画面) の読解であり、45 言語の real-time translation に対応する。
 
-![Data Connectors](images/train-dataconnectors.webp)
+![Data Connectors](https://i.gyazo.com/b2e815b2f1ee3936c3df66c5ed4ffdb0.png)
 *Linear、Stripe、Shopify などへの MCP、API Data Connectors の図。from https://fin.ai/train*
 
 ## 2. Test (テスト): 本番前に会話全体を検証する
@@ -58,7 +58,7 @@ Test では Fin AI Agent > Test で customer questions を投げ、回答の sou
 
 Simulations は実 scenario を開始から終了まで全会話で再現する。AI が simulated customer 役となり、指定 context で Fin と会話し、別の AI が success criteria に基づき judge して pass、fail を付ける。失敗時は transcript で原因を追える。保存した Simulations は Procedure 更新のたびに再実行し、regression を検知する。
 
-![Simulation creation](images/test-simulation-create.png)
+![Simulation creation](https://i.gyazo.com/67608068cba01b090a723490bb324123.png)
 *Shipping damage の simulation 作成画面。左に Instructions ブロック (Get orders、条件分岐、全額返金など)、右に Test as (Preview user、All brands)、Customer's starting message、follow-up messages、Customer data available to Fin、Save、Run がある。from Fin Tasks ヘルプ*
 
 操作の流れは Train > Tasks で task を edit し、Instructions ブロックの Test から New simulation を開き、Test title、Test as (workspace の contacts)、user の opening message、User context (状況の補足)、Available data (data connectors、attributes の値)、Success criteria (Fin が理由を説明する、next step を提示する、data connector が発火するなど) を入力し、Save または Run する。実行結果は右の Tests パネルに Passed、Failed、Not yet run で並び、See conversations で simulated customer と Fin の往復を確認する。概要ページからの Simulations は live 版、editor 内からは draft 版を対象とする。
@@ -71,7 +71,7 @@ AI 研究の eval 手法を CS 運用に移植した考え方であり、Test �
 
 Deploy セクションでは live chat、email、phone の各チャネルに Fin を出す。手段は Simple deployment と Workflows であり、Fin AI Agent > Deploy > Chat、Email、Voice で設定する。一度更新すれば全チャネルに即時反映する (Configure once, apply everywhere)。
 
-![Deploy channels](images/deploy-chat.png)
+![Deploy channels](https://i.gyazo.com/67591da38cae8f8c409cbacd895cbed3.png)
 *Facebook、電話、WhatsApp、Intercom、Gmail、Instagram、Slack のチャネルアイコンと、chat、Fin チャット、email (Scheduling food order) の 3 画面。from Fin AI Agent explained*
 
 - Fin over chat: Messenger、WhatsApp、SMS、social で挨拶、即時回答、escalation する
@@ -89,7 +89,7 @@ Deploy セクションでは live chat、email、phone の各チャネルに Fin
 
 Analyze セクションは live 後の real-time Insights であり、継続改善の起点である。学びを元に train、test、deploy を回して対応 volume を増やす。
 
-![Performance dashboard](images/analyze-performance.webp)
+![Performance dashboard](https://i.gyazo.com/1ca27bf7edbd582ccb010d78728c1795.png)
 *Performance 画面。Automation rate 55%、CX Score 63%、Involvement rate 73%、Resolution rate 76%、Performance funnel。from https://fin.ai/analyze*
 
 ### 4-1. Insights: 全会話を常時分析する
@@ -100,24 +100,24 @@ Analyze セクションは live 後の real-time Insights であり、継続改�
 - Topics Explorer: 会話を topics、subtopics に自動分類し、volume の要因を特定する。Topics、Subtopics の作成、merge、削除、改名に対応する
 - Trends: 週次の volume 急増、性能低下、新規質問を自動 report する
 
-![CX Score](images/analyze-cxscore.webp)
+![CX Score](https://i.gyazo.com/b5438b629ea3d3d3176712e67f9a84b5.png)
 *CX Score dashboard。from https://fin.ai/analyze*
 
-![Topics Explorer](images/analyze-topics.webp)
+![Topics Explorer](https://i.gyazo.com/cac3c6a2c76b363896abb69ba5af7b82.png)
 *Topics Explorer の volume 表示。from https://fin.ai/analyze*
 
 ### 4-2. Monitors: 品質を継続評価する
 
 Monitors は Fin と人間の全会話を standards 照合で評価する。filters と自然言語で監視対象を定義し、Custom Scorecards で自社基準の良い対応を定義して AI が全会話を採点し、Alerts で逸脱を real-time 通知し、Review Queues で対応を一元管理する。Monitor reports は Analyze > Custom Reports > Chart の Monitors 指標で作成する。
 
-![Monitors](images/analyze-monitors.webp)
+![Monitors](https://i.gyazo.com/2aeedc80fcecdd874205bfb899c4e59d.png)
 *Monitors overview と edit monitor panel。from https://fin.ai/analyze*
 
 ### 4-3. Recommendations: 未解決から優先 fix を提示する
 
 Recommendations は Fin が解決できなかった会話を全件解析し、content、data、action の gaps を影響度順で提示し、one-click で適用する。Anthropic は週次 review で総解決率 15% 向上した。Fin AI Agent > Analyze > Conversations から inbox の Fin 会話に飛べる。holistic reporting は AI と人間を unified view で示し、custom reporting は chart 作成と drill-in に対応する。
 
-![Recommendations](images/analyze-recommendations.webp)
+![Recommendations](https://i.gyazo.com/c9162e12b23acf652d8d9c9a36464a92.png)
 *優先度付き改善提案の一覧。from https://fin.ai/analyze*
 
 ## 参考
