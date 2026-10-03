@@ -2,7 +2,6 @@
 
 調査日: 2026-10-03
 対象: https://sierra.ai/jp/blog/context-engineering-the-key-to-great-agents (2026-05-05、Neil Rahilly)
-画像は `images/` 以下に保存した公式公開UIを直接添付する。
 
 ## 前提: Context engineering とは何か
 
