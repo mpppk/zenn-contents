@@ -7,7 +7,7 @@
 
 Agent Studio は Agent OS のノーコード基盤である。CX、オペレーション、エンジニアが build / test / deploy / optimize を回す。Agent SDK と同じ building blocks をノーコードで扱える点が 2.0 の要点である。
 
-公式: https://sierra.ai/product/agent-studio / https://sierra.ai/blog/agent-studio-2-0
+公式: [https://sierra.ai/product/agent-studio](https://sierra.ai/product/agent-studio) / [https://sierra.ai/blog/agent-studio-2-0](https://sierra.ai/blog/agent-studio-2-0)
 
 ## 2. Journeys
 
@@ -18,10 +18,10 @@ Agent Studio は Agent OS のノーコード基盤である。CX、オペレー�
 2.0 の Journeys は Agent SDK と同じ intelligence で動作する composable building blocks である。逐次ワークフローや SOP の箇条書きを超えて、目標理解、ポリシー遵守、ツール使用、推論を組み合わせる。
 
 ![Journeys Transaction Dispute](https://i.gyazo.com/567bde56d2f12bfc0fc66c159184e90b.png)
-*Transaction Dispute の Description / Criteria / Guidance と Chat での Agent reasoning 表示。Publish ボタン付き。from https://sierra.ai/blog/meet-agent-studio*
+*Transaction Dispute の Description / Criteria / Guidance と Chat での Agent reasoning 表示。Publish ボタン付き。from [https://sierra.ai/blog/meet-agent-studio](https://sierra.ai/blog/meet-agent-studio)*
 
 ![Journeys 2.0](https://i.gyazo.com/3d7a80a468a36b537f17eb6bf8e1b8b1.png)
-*composable building blocks の図。from https://sierra.ai/blog/agent-studio-2-0*
+*composable building blocks の図。from [https://sierra.ai/blog/agent-studio-2-0](https://sierra.ai/blog/agent-studio-2-0)*
 
 - Agent instructions: ゼロからの定義と既存 operating procedures からの AI 生成に対応する
 - Tools and dynamic data: 外部システムや knowledge source の参照により応答を最新に保つ
@@ -35,7 +35,7 @@ voice では latency 自体が UX のため、tool 呼び出しと API 呼び出
 デバッグでは、なぜそのツールを選んだか、他に選択肢はあったか、矛盾した指示がなかったか、orchestration logic は正しいかを掘り下げられる。Sierra の building blocks と自前の API 呼び出しの両方を取り込む。ノーコード向け簡易表示と SDK 向け詳細表示を使い分ける。
 
 ![Agent Traces timeline](https://i.gyazo.com/ef905090ce857e384a237ae35cb3bd6f.png)
-*Transcription 185ms、Supervisor、Tool Call、GET Request、Synthesis 8.83s などの内訳と Decision / Response / Tools available の表示。from https://sierra.ai/blog/agent-traces*
+*Transcription 185ms、Supervisor、Tool Call、GET Request、Synthesis 8.83s などの内訳と Decision / Response / Tools available の表示。from [https://sierra.ai/blog/agent-traces](https://sierra.ai/blog/agent-traces)*
 
 ## 4. Knowledge
 
@@ -63,7 +63,7 @@ agent、mock user、judge の3者構成である。user は言語、技術習熟
 - Voice Sims: transcription、noise、話者差への耐性確認
 
 ![Simulations Card replacement](https://i.gyazo.com/32b5d0743056f033360a5678bde11753.png)
-*Card replacement の User instructions、Expected agent behavior、会話ログの一覧。from https://sierra.ai/blog/simulations-the-secret-behind-every-great-agent*
+*Card replacement の User instructions、Expected agent behavior、会話ログの一覧。from [https://sierra.ai/blog/simulations-the-secret-behind-every-great-agent](https://sierra.ai/blog/simulations-the-secret-behind-every-great-agent)*
 
 CX チームは Journeys と並べて扱い、journey 変更の publish 前に pass を求める。developers は GitHub Actions や CLI で CI/CD に接続し、unit tests と同様に releases を gate する。1日あたり35,000件超の実行があり、解決率 90%、CSAT 4.5/5.0 超の事例がある。
 
@@ -74,10 +74,10 @@ CX チームは Journeys と並べて扱い、journey 変更の publish 前に p
 200 名超で協調する fintech の事例がある。検証は既存 Simulations の実行、新規 journeys の自動生成、Dev Chat での手動対話で行う。Workspace は collaborative draft、feature branch の扱いである。
 
 ![Workspaces workflow](https://i.gyazo.com/e83f885d2514cc4fc682f4907eda2602.png)
-*individual workspaces -> snapshots -> releases の図。from https://sierra.ai/blog/workspaces*
+*individual workspaces -&gt; snapshots -&gt; releases の図。from [https://sierra.ai/blog/workspaces](https://sierra.ai/blog/workspaces)*
 
 ![Release Snapshot](https://i.gyazo.com/940d109fce33adae3460f0da8f68d6c7.png)
-*Release Snapshot dialog with schedule。from https://sierra.ai/blog/workspaces*
+*Release Snapshot dialog with schedule。from [https://sierra.ai/blog/workspaces](https://sierra.ai/blog/workspaces)*
 
 ## 8. Ghostwriter
 
@@ -88,18 +88,18 @@ CX チームは Journeys と並べて扱い、journey 変更の publish 前に p
 - Improve: conversations、metrics、releases、experiments を goals、guardrails で選別する。Slack、Teams に evidence と next step を提示し、release 後も追跡する。customer context と team feedback から未充足 needs を発掘する
 
 ![Ghostwriter build](https://i.gyazo.com/85d17a9e165749f5cdfd30f89710c3be.png)
-*Updating agent / Researching / Creating tests / Running tests の表示。from https://sierra.ai/product/ghostwriter*
+*Updating agent / Researching / Creating tests / Running tests の表示。from [https://sierra.ai/product/ghostwriter](https://sierra.ai/product/ghostwriter)*
 
 2026-09-28 の teammate 化では Slack、Teams の channel に追加し、@-mention で resolution rate 動向や sales funnel chart や experiment 起案に応答しつつ能動提案を持ち込む。transfer 要因の特定と 3 changes、影響見積もり、優先 2 件の推奨、wall of love (delight 5 件)、payment failure の backend、integration 分離提案、promo gap の experiment 提案などを行う。不要時は沈黙し、週次で振り返る personality が与えられている。
 
 ![Ghostwriter transfer analysis](https://i.gyazo.com/357d9d95ca0b10b4e2c5781dba543682.jpg)
-*3,720 calls の review から 3 changes を特定し、影響見積もりと experiment 起案を提示した図。from https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate*
+*3,720 calls の review から 3 changes を特定し、影響見積もりと experiment 起案を提示した図。from [https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate](https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate)*
 
 ![Ghostwriter A/B test chart](https://i.gyazo.com/270b3a4d6ba0a5d27a1b01962262c5de.jpg)
-*experiments の結果が statistically significant かを伝える図。from https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate*
+*experiments の結果が statistically significant かを伝える図。from [https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate](https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate)*
 
 ![Ghostwriter payment investigation](https://i.gyazo.com/6adf18d916fa7d36fe2ee356290d47a4.jpg)
-*payment failure の原因切り分け図。from https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate*
+*payment failure の原因切り分け図。from [https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate](https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate)*
 
 ## 9. Explorer / Insights
 
@@ -108,10 +108,10 @@ Insights は Reporting、Experimentation、Observability で構成される。Re
 Explorer は weekly briefing を自動配信し、想定外パターンを浮上させる。自然言語で数千会話を横断分析し、summary、categorized themes、根拠会話 links を返す。journeys、channels、time windows で深掘りできる。recommendations を Ghostwriter へ one-click handoff して自動実装し、前後比較で効果測定する。
 
 ![Explorer CSAT](https://i.gyazo.com/e5b8d1328c3d3ae28930e333e6e5271e.png)
-*CSAT drop への query と suggested questions の UI。from https://sierra.ai/product/explorer*
+*CSAT drop への query と suggested questions の UI。from [https://sierra.ai/product/explorer](https://sierra.ai/product/explorer)*
 
 ![Explorer Recommendations](https://i.gyazo.com/a1f333bd13a1c7c50a564e35adfce429.png)
-*Recommendations card と Compare findings / Show all conversations。from https://sierra.ai/product/explorer*
+*Recommendations card と Compare findings / Show all conversations。from [https://sierra.ai/product/explorer](https://sierra.ai/product/explorer)*
 
 Monitoring、Auditing、Alerting は OpenTelemetry、EventBridge、Pub/Sub、export API で外部に送れる。Monitors は hallucination、policy violation、sentiment 急落、abuse を検知して PagerDuty 等に通知する。Traces で個別会話、Explorer で pattern、root cause を調査する。
 
@@ -129,16 +129,16 @@ Monitoring、Auditing、Alerting は OpenTelemetry、EventBridge、Pub/Sub、exp
 - ChatGPT: 単一 Sierra agent が first-party と ChatGPT app を兼ねる。expose する journeys、data、capabilities を channel ごとに選択し、maps、forms、charts の interactive experiences を作り、MCP native で 1-click、CI/CD 公開する
 
 ![Harmony](https://i.gyazo.com/71e1da12ae863e34306edb0c90d0e6f6.png)
-*SiriusXM Harmony の例。from https://sierra.ai/blog/meet-agent-studio*
+*SiriusXM Harmony の例。from [https://sierra.ai/blog/meet-agent-studio](https://sierra.ai/blog/meet-agent-studio)*
 
 ![Email](https://i.gyazo.com/2955485569c8fa3a3a2161a141d1d550.png)
-*予約変更3択メールの例。from https://sierra.ai/product/channels*
+*予約変更3択メールの例。from [https://sierra.ai/product/channels](https://sierra.ai/product/channels)*
 
 ![Live Assist](https://i.gyazo.com/f4faa9217774958ddbe875d293386bda.png)
-*reason for calling / sentiment / benefit を表示する care UI。from https://sierra.ai/product/channels*
+*reason for calling / sentiment / benefit を表示する care UI。from [https://sierra.ai/product/channels](https://sierra.ai/product/channels)*
 
 ![ChatGPT](https://i.gyazo.com/ddd003d5fdc7d1eef7a7739986351f45.png)
-*ChatGPT app の listings 例。from https://sierra.ai/product/channels*
+*ChatGPT app の listings 例。from [https://sierra.ai/product/channels](https://sierra.ai/product/channels)*
 
 ## 11. 透明性、ポータビリティ
 
@@ -162,17 +162,17 @@ Your agent, laid bare の要点である。
 
 ## 参考
 
-- https://sierra.ai/product/agent-studio
-- https://sierra.ai/blog/meet-agent-studio
-- https://sierra.ai/blog/agent-studio-2-0
-- https://sierra.ai/blog/workspaces
-- https://sierra.ai/blog/simulations-the-secret-behind-every-great-agent
-- https://sierra.ai/blog/agent-traces
-- https://sierra.ai/product/ghostwriter
-- https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate
-- https://sierra.ai/blog/your-agent-laid-bare-and-why-it-matters
-- https://sierra.ai/product/insights
-- https://sierra.ai/product/explorer
-- https://sierra.ai/product/channels
-- https://sierra.ai/blog/introducing-voice-personas
+- [https://sierra.ai/product/agent-studio](https://sierra.ai/product/agent-studio)
+- [https://sierra.ai/blog/meet-agent-studio](https://sierra.ai/blog/meet-agent-studio)
+- [https://sierra.ai/blog/agent-studio-2-0](https://sierra.ai/blog/agent-studio-2-0)
+- [https://sierra.ai/blog/workspaces](https://sierra.ai/blog/workspaces)
+- [https://sierra.ai/blog/simulations-the-secret-behind-every-great-agent](https://sierra.ai/blog/simulations-the-secret-behind-every-great-agent)
+- [https://sierra.ai/blog/agent-traces](https://sierra.ai/blog/agent-traces)
+- [https://sierra.ai/product/ghostwriter](https://sierra.ai/product/ghostwriter)
+- [https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate](https://sierra.ai/blog/ghostwriter-ai-tool-to-teammate)
+- [https://sierra.ai/blog/your-agent-laid-bare-and-why-it-matters](https://sierra.ai/blog/your-agent-laid-bare-and-why-it-matters)
+- [https://sierra.ai/product/insights](https://sierra.ai/product/insights)
+- [https://sierra.ai/product/explorer](https://sierra.ai/product/explorer)
+- [https://sierra.ai/product/channels](https://sierra.ai/product/channels)
+- [https://sierra.ai/blog/introducing-voice-personas](https://sierra.ai/blog/introducing-voice-personas)
 - Cosense niki-cs Sierra / 外部システム連携とアクション実行の比較
