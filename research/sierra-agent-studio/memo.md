@@ -77,3 +77,17 @@ engineering workflow の規模とは、agent をコードとして大人数・�
 Context engineering の記事である。Three eras of customer interaction として Era 1: IVR、Era 2: Flow、Era 3: Context engineering を対比し、Flow は predefined path (flowchart、decision tree、digitized SOPs) であり、if this then that で動作し、範囲外は escalate し、SOP 追加で管理困難になると述べる。Era 3 は rigid flows ではなく goals に導かれ guardrails に制約されると主張する。関連文書として Agent Studio 2.0 の記事 (Journeys go beyond sequential workflows and lists of SOPs, which demo well but tend to degrade as they scale) と Agent Development Life Cycle の記事 (prompt engineering による inscrutable な workflows の回避) がある。
 
 参考: https://sierra.ai/blog/context-engineering-the-key-to-great-agents / https://sierra.ai/blog/agent-studio-2-0
+
+### Q. Journeysセクションで、ナレッジ参照や外部APIの呼び出しを「ステップ」と呼んでいるが、これは正式な用語か?
+
+正式な Context Block 名ではない。一般名詞の steps としての用法である。Meet Agent Studio の記事では These include steps like referencing articles, calling external APIs, or gathering information from customers および tailor journeys or steps to each channel と小文字で書かれており、Journey の下位にある作業項目を指す。製品ページでも Define step-by-step workflows と一般的な形容として使う。
+
+正式な Types of context の Block 名は Journey、Tool、Rule / Policy、Workflow、Knowledge、Memory、Glossary、Response phrasing であり、Step は含まれない。Workflow の説明自体が Step-by-step guidance である。note 記事の「ステップ」はブログの steps の意訳として読むのが正確であり、UI 上の正式ラベルとして断定はできない。
+
+参考: https://sierra.ai/blog/meet-agent-studio / https://sierra.ai/product/agent-studio / https://sierra.ai/blog/context-engineering-the-key-to-great-agents
+
+### Q. JourneyのステップをToolと考えるとダメか?
+
+全部をToolとするのは不正確である。stepsの内訳は3種であり、対応するBlockが異なる。外部APIの呼び出しはToolに該当する。Toolは外部システムとの接点であり、例としてpull an itinerary、check coverage、process a refundが挙げられている。ナレッジの参照はKnowledgeに該当する。KnowledgeはHelp center articles、product docs、FAQs、internal policiesであり、on demandでアクセスするものと定義されている。顧客からの情報収集はToolでもKnowledgeでもなく、JourneyのGuidanceとしての対話に該当する。
+
+参考: https://sierra.ai/blog/meet-agent-studio / https://sierra.ai/blog/context-engineering-the-key-to-great-agents
